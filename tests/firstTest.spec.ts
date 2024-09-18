@@ -1,4 +1,4 @@
-import { test } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("http://localhost:4200/");
@@ -100,3 +100,40 @@ test("parent elements", async ({ page }) => {
     .getByRole("textbox", { name: "Email" })
     .click();
 });
+
+test("Reusing the locators", async ({ page }) => {
+  const basicForm = page.locator("nb-card").filter({ hasText: "Basic form" });
+  const emailField = basicForm.getByRole("textbox", { name: "Email" });
+
+  await emailField.fill("test@test.com");
+  await basicForm.getByRole("textbox", { name: "Password" }).fill("Welcome123");
+  await basicForm.getByRole("button").click();
+
+  await expect(emailField).toHaveValue("test@test.com");
+});
+
+test("extracting values", async ({ page }) => {
+  const basicForm = page.locator("nb-card").filter({ hasText: "Basic form" });
+  const buttonText = await basicForm.locator("button").textContent();
+  expect(buttonText).toEqual("Submit");
+
+  const allRadioButtonsLabels = await page
+    .locator("nb-radio")
+    .allTextContents();
+  expect(allRadioButtonsLabels).toContain("Option 1");
+
+  const emailField = basicForm.getByRole("textbox", { name: "Email" });
+  await emailField.fill("testœtest.com");
+  const emailValue = await emailField.inputValue();
+
+  expect(emailValue).toEqual("testœtest.com");
+
+  const placeholderValue = await emailField.getAttribute("placeholder");
+  expect(placeholderValue).toEqual("Email");
+});
+
+//test('assertions', async ({ page }) => {
+// choose text content - assert text content to equal sth
+// choose element - assert the element to have specific value
+// soft assertion - test can continue even if the assertion fails - expect.soft
+//})
