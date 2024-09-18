@@ -49,3 +49,54 @@ test("User facing locators", async ({ page }) => {
   // however is not user-facing
   await page.getByTestId("SignIn").click();
 });
+
+test("locating child elements", async ({ page }) => {
+  // await page.locator('nb-card nb-radio :text-is("Option 1")').click();
+  // chaining also possible
+  await page
+    .locator("nb-card")
+    .locator("nb-radio")
+    .locator(':text-is("Option 1")')
+    .click();
+
+  await page
+    .locator("nb-card")
+    .getByRole("button", { name: "Sign in" })
+    .first()
+    .click();
+
+  // bad practice
+  // await page.locator("nb-card").nth(3).click();
+});
+
+test("parent elements", async ({ page }) => {
+  await page
+    .locator("nb-card", { hasText: "Using the Grid" })
+    .getByRole("textbox", { name: "Email" })
+    .first()
+    .click();
+
+  await page
+    .locator("nb-card", { has: page.locator("#inputEmail1") })
+    .getByRole("textbox", { name: "Email" })
+    .first()
+    .click();
+
+  await page
+    .locator("nb-card")
+    .filter({ hasText: "Basic form" })
+    .getByRole("textbox", { name: "Email" })
+    .click();
+
+  await page
+    .locator("nb-card")
+    .filter({ has: page.locator(".status-danger") })
+    .getByRole("textbox", { name: "Password" })
+    .click();
+  // go one level up in DOM
+  await page
+    .locator(':text-is("Using the Grid")')
+    .locator("..")
+    .getByRole("textbox", { name: "Email" })
+    .click();
+});
