@@ -61,4 +61,22 @@ test("tooltips", async ({ page }) => {
   await toolTipCard.getByRole("button", { name: "Top" }).hover();
 });
 
+test("dialog box", async ({ page }) => {
+  await page.getByText("Tables & Data").click();
+  await page.getByText("Smart Table").click();
 
+  // browser dialog box
+  page.on("dialog", async (dialog) => {
+    expect(dialog.message()).toBe("Are you sure you want to delete?");
+    dialog.accept();
+  });
+
+  await page
+    .getByRole("table")
+    .locator("tr", { hasText: "mdo@gmail.com" })
+    .locator(".nb-trash")
+    .click();
+  await expect(page.locator("table tr").first()).not.toHaveText(
+    "mdo@gmail.com"
+  );
+});
