@@ -93,3 +93,13 @@ test("web tables", async ({ page }) => {
   await page.locator("input-editor").getByPlaceholder("Age").fill("35");
   await page.locator(".nb-checkmark").click();
 });
+
+test('datepicker', async ({ page }) => {
+  await page.getByText("Forms").click();
+  await page.getByText("Datepicker").click();
+  const calendarInputField = page.getByPlaceholder('Form Picker')
+  await calendarInputField.click()
+
+  await page.locator('[class="day-cell ng-star-inserted"]').getByText('1', {exact: true}).click()
+  expect(calendarInputField).toHaveValue('Sep 1, 2024')
+})
