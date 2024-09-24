@@ -80,3 +80,16 @@ test("dialog box", async ({ page }) => {
     "mdo@gmail.com"
   );
 });
+
+test("web tables", async ({ page }) => {
+  await page.getByText("Tables & Data").click();
+  await page.getByText("Smart Table").click();
+
+  // get the row by any test in this row
+  const targetRow = page.getByRole("row", { name: "twitter@outlook.com" });
+  await targetRow.locator(".nb-edit").click();
+  // getting the property
+  await page.locator("input-editor").getByPlaceholder("Age").clear();
+  await page.locator("input-editor").getByPlaceholder("Age").fill("35");
+  await page.locator(".nb-checkmark").click();
+});
